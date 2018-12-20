@@ -1,18 +1,16 @@
 package com.example.fess.firebasenotificationapp;
 
-import android.bluetooth.BluetoothAssignedNumbers;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
@@ -28,9 +26,6 @@ import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-
-import java.net.URI;
-import java.security.spec.PSSParameterSpec;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -65,7 +60,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         password = (EditText) findViewById(R.id.password);
         submit = (Button) findViewById(R.id.submit);
         login = (Button) findViewById(R.id.login);
-        image = (CircleImageView) findViewById(R.id.image);
+        image = (CircleImageView) findViewById(R.id.image_profile);
         submit.setOnClickListener(this);
         login.setOnClickListener(this);
         image.setOnClickListener(this);
@@ -83,7 +78,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
 
                 break;
 
-            case R.id.image:
+            case R.id.image_profile:
                 Intent intent = new Intent();
                 intent.setType("image/*");
                 intent.setAction(Intent.ACTION_GET_CONTENT);
@@ -96,7 +91,9 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
 
 
         final String user_name = name.getText().toString();
+        Log.d("Profile_user-name","user_name"+user_name);
         String EmailTxt = email.getText().toString();
+        Log.d("Profile_user-name","user_EmailTxt"+EmailTxt);
         String PassTxt = password.getText().toString();
 
         if (uri != null) {
@@ -109,7 +106,9 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
 
                         if (task.isSuccessful()) {
                             final String user_id = auth.getCurrentUser().getUid();
-                            StorageReference user_profile = StorageReference.child(user_id + ".jpg");
+                            Log.d("Profile_user-name","user_user_id-"+user_id);
+                            StorageReference user_profile = StorageReference.child(user_id + ".png");
+                            Log.d("Profile_user-name","user_user_profile-"+user_profile);
 
                             user_profile.putFile(uri).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
                                 @Override
@@ -121,12 +120,14 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
 
 
                                             Uri downloadUrl = taskSnapshot.getUploadSessionUri();
+                                            Log.d("Profile_user-name","user_downloadUrl-"+downloadUrl.toString());
                                             String image_uri = downloadUrl.toString();
+                                            Log.d("Profile_user-name","user_image_uri-"+image_uri);
                                             String token_id =  FirebaseInstanceId.getInstance().getToken();
                                             DatabaseReference user_data = database.child(user_id);
                                             user_data.child("name").setValue(user_name);
                                             user_data.child("user_image").setValue(image_uri);
-                                            user_data.child("token_id").setValue(token_id);;
+                                            user_data.child("token_id").setValue(token_id);
                                             progressBar.setVisibility(View.INVISIBLE);
                                             startActivity(new Intent(RegisterActivity.this, MainActivity.class));
                                             finishAffinity();
@@ -134,7 +135,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
                                     }).addOnFailureListener(new OnFailureListener() {
                                         @Override
                                         public void onFailure(@NonNull Exception e) {
-                                            Toast.makeText(RegisterActivity.this, "Image not Uploaded", Toast.LENGTH_SHORT).show();
+                                            Toast.makeText(RegisterActivity.this, "Image not Uploaded", Toast.LENGTH_LONG).show();
                                             progressBar.setVisibility(View.INVISIBLE);
                                         }
                                     });
