@@ -5,31 +5,21 @@ import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.INotificationSideChannel;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
-import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.Target;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-
-import java.util.zip.Inflater;
-
+import com.google.firebase.database.*;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 
@@ -54,11 +44,11 @@ public class ProfileFragment extends android.support.v4.app.Fragment {
         View view = inflater.inflate(R.layout.fragment_profile, container, false);
 
         auth = FirebaseAuth.getInstance();
-        logout = (Button) view.findViewById(R.id.logout);
+        logout = view.findViewById(R.id.logout);
 
-        name = (TextView) view.findViewById(R.id.name);
-        image = (CircleImageView) view.findViewById(R.id.image);
-        progressBar = (ProgressBar) view.findViewById(R.id.progress);
+        name = view.findViewById(R.id.name);
+        image = view.findViewById(R.id.image_profile);
+        progressBar = view.findViewById(R.id.progress);
 
         String user_id = auth.getCurrentUser().getUid();
 
@@ -68,7 +58,9 @@ public class ProfileFragment extends android.support.v4.app.Fragment {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 String UserName = (String) dataSnapshot.child("name").getValue();
-                String image_url = (String) dataSnapshot.child("user_image").getValue();
+//                String image_url = "https://firebasestorage.googleapis.com/v0/b/fir-notificationapp-84ba7.appspot.com/o/images%2F2UrhWbxb6uRkMkTT9Tg9bz00jlv1.jpg?alt=media&token=98909b94-7e24-4fef-8246-cbee8c89ae52";
+                String image_url = dataSnapshot.child("user_image").getValue().toString();
+                Log.d("Profile_Images", "image_url-" + image_url);
 
                 name.setText(UserName);
 

@@ -13,7 +13,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
-
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -26,7 +25,6 @@ import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class RegisterActivity extends AppCompatActivity implements View.OnClickListener {
@@ -40,6 +38,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
 
     FirebaseAuth auth;
     StorageReference StorageReference;
+    com.google.firebase.storage.StorageReference StorageReference1;
     DatabaseReference database;
 
     @Override
@@ -51,16 +50,18 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
 
         database = FirebaseDatabase.getInstance().getReference().child("Users");
         StorageReference = FirebaseStorage.getInstance().getReference().child("images");
+        StorageReference1 = FirebaseStorage.getInstance().getReference().child("images");
+
 
 
         uri = null;
-        progressBar = (ProgressBar) findViewById(R.id.registerProgressBar);
-        email = (EditText) findViewById(R.id.email);
-        name = (EditText) findViewById(R.id.name);
-        password = (EditText) findViewById(R.id.password);
-        submit = (Button) findViewById(R.id.submit);
-        login = (Button) findViewById(R.id.login);
-        image = (CircleImageView) findViewById(R.id.image_profile);
+        progressBar = findViewById(R.id.registerProgressBar);
+        email = findViewById(R.id.email);
+        name = findViewById(R.id.name);
+        password = findViewById(R.id.password);
+        submit = findViewById(R.id.submit);
+        login = findViewById(R.id.login);
+        image = findViewById(R.id.image_profile);
         submit.setOnClickListener(this);
         login.setOnClickListener(this);
         image.setOnClickListener(this);
@@ -107,8 +108,9 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
                         if (task.isSuccessful()) {
                             final String user_id = auth.getCurrentUser().getUid();
                             Log.d("Profile_user-name","user_user_id-"+user_id);
-                            StorageReference user_profile = StorageReference.child(user_id + ".png");
+                            final StorageReference user_profile = StorageReference.child(user_id + ".png");
                             Log.d("Profile_user-name","user_user_profile-"+user_profile);
+
 
                             user_profile.putFile(uri).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
                                 @Override
@@ -119,7 +121,10 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
                                         public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
 
 
+//                                            Uri downloadUrl = taskSnapshot.getUploadSessionUri();
+//                                            StorageReference user_profile2 = StorageReference.;
                                             Uri downloadUrl = taskSnapshot.getUploadSessionUri();
+
                                             Log.d("Profile_user-name","user_downloadUrl-"+downloadUrl.toString());
                                             String image_uri = downloadUrl.toString();
                                             Log.d("Profile_user-name","user_image_uri-"+image_uri);
